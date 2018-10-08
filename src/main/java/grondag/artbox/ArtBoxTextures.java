@@ -12,7 +12,7 @@ import grondag.exotic_matter.model.texture.TexturePaletteSpec;
 import grondag.exotic_matter.model.texture.TextureRenderIntent;
 import grondag.exotic_matter.model.texture.TextureScale;
 
-public class ArtboxTextures
+public class ArtBoxTextures
 {
   public static final ITexturePalette BIGTEX_MARBLE = TexturePaletteRegistry.addTexturePallette("marble", "marble", new TexturePaletteSpec(ExoticMatter.INSTANCE)
   .withVersionCount(1).withScale(TextureScale.MEDIUM).withLayout(TextureLayout.SIMPLE)
