@@ -1,0 +1,148 @@
+buildscript {
+    repositories {
+        mavenCentral()
+		
+	    maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+//        classpath 'org.ajoberstar:gradle-git:0.10.1'
+    }
+}
+
+// see https://github.com/passsy/gradle-GitVersioner
+ext.gitVersioner = [
+        defaultBranch           : "master",  // default "master"
+        stableBranches          : ["master"], // default [], the feature branch postfix (-dm4(6)) will not be appended on stable branches, all commits are included into the version number calculation
+        yearFactor              : 1200, 	  // default "1000", increasing every 8.57h
+        snapshotEnabled         : true,      // default false, the "-SNAPSHOT" postfix
+        localChangesCountEnabled: false,       // default false, the (<commitCount>) before -SNAPSHOT
+        shortName: { gitVersion ->            // optional closure to build a short name
+          // allows you to add your own short name logic
+          // All properties from gitVersion are available
+          // can be used for CI `System.getenv("BUILD_NUMBER")`
+
+          // i.e. use short sha1
+          return gitVersion.commit.subSequence(0, 7)
+        }
+]
+
+// import the script which runs the version generation
+apply from: 'https://raw.githubusercontent.com/passsy/gradle-GitVersioner/master/git-versioner.gradle'
+
+// variable `gitVersionName` can be used everywhere to get the revision name
+println("versionName: $gitVersionName") // output: "versionName: 1083-dm4(6)-SNAPSHOT"
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+version = "mc${minecraft_version}-${mod_version}.${gitVersionName}-${release_type}"
+group= "grondag" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "artbox"
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "${minecraft_version}-${forge_version}"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+    useDepAts = false
+    
+    replaceIn "Reference.java"
+    replace "@VERSION@", project.version
+}
+
+jar {
+    from sourceSets.main.output
+    from sourceSets.api.output
+}
+    
+task deobfJar(type: Jar) {
+	from sourceSets.main.allSource
+    from sourceSets.main.output
+    from sourceSets.api.allSource
+    from sourceSets.api.output
+    classifier = 'dev'
+}
+
+artifacts {
+    archives sourceJar
+    archives deobfJar
+    archives jar
+}
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "https://grondag-repo.appspot.com") {
+                authentication(userName: "admin", password: "${maven_password}")
+            }
+            pom.version = project.version
+            pom.artifactId = project.archivesBaseName
+            pom.groupId = project.group
+        }
+    }
+}
+
+sourceSets {
+	main {
+	        java {
+	            include 'grondag/**/*'
+	            exclude '*.DS_Store'
+	        }
+	        resources
+	        {
+	        	include '**/*'
+	        	exclude '*.DS_Store'
+	        }
+    }
+	api {
+		java {
+	            include 'grondag/**'
+	            exclude '*.DS_Store'
+	        }
+	}
+    test {
+        java {
+            exclude 'grondag/**'
+        }
+    }
+}
