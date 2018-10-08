@@ -4,6 +4,7 @@ Thumbs.db
 ## exclude large animated textures
 *_anim.png
 *_anim_low.png
+*.jpg
 
 # eclipse
 bin
