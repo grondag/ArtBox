@@ -1,13 +1,13 @@
 [
 {
-  "modid": "wut",
-  "name": "Wut",
-  "description": "Random testing and experimental stuff",
+  "modid": "artbox",
+  "name": "ArtBox",
+  "description": "Shared Textures for Grondag's Mods",
   "version": "1.12.2-0.0.1.0",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Grondag", "CirrusTheCat"],
+  "authorList": ["Grondag"],
   "credits": "The Forge team and all the other mod authors who went before.",
   "logoFile": "",
   "screenshots": [],
