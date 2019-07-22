@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "artbox",
+  "version": "${version}",
+  "name": "Art Box",
+  "description": "Grondag's art library for Minecraft Fabric mods",
+  "authors": [
+    "Grondag"
+  ],
+  "contact": {
+    "homepage": "https://minecraft.curseforge.com/projects/artbox",
+    "issues": "https://github.com/grondag/artbox/issues",
+    "sources": "https://github.com/grondag/artbox"
+  },
+  "license": "Apache-2.0",
+  "icon": "assets/fermion/artbox_icon.png",
+  
+  "environment": "*",
+  "entrypoints": {
+    "main": [ "grondag.artbox.ArtBox" ]
+  },
+  "requires": {
+    "fabricloader": ">=0.4.8",
+    "fabric": "*"
+  },
+  "custom": {
+    "modmenu:api": true,
+    "modmenu:clientsideOnly": false
+  }
+}
